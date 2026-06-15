@@ -3,27 +3,24 @@
 error_reporting(0);
 ini_set('display_errors', 0);
 
-// Aiven MySQL Database Configuration - Credentials from Environment Variables
+// Aiven MySQL Database Configuration (without SSL - simple connection)
 $host = 'mysql-34e81043-techhubactivate-0ca2.j.aivencloud.com';
 $port = '17010';
 $dbname = 'defaultdb';
 $username = 'avnadmin';
-$password = getenv('DB_PASSWORD'); // Read from Render environment variable
+$password = getenv('DB_PASSWORD');
 
+// Simple PDO connection (no SSL)
 try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password, [
-        PDO::MYSQL_ATTR_SSL_CA => '/etc/ssl/certs/ca-certificates.crt',
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
 
-// MySQLi connection for compatibility
-$conn = mysqli_init();
-mysqli_ssl_set($conn, NULL, NULL, '/etc/ssl/certs/ca-certificates.crt', NULL, NULL);
-mysqli_real_connect($conn, $host, $username, $password, $dbname, $port, NULL, MYSQLI_CLIENT_SSL);
+// Simple MySQLi connection (no SSL)
+$conn = mysqli_connect($host, $username, $password, $dbname, $port);
 
 if (!$conn) {
     die("MySQLi Connection failed: " . mysqli_connect_error());
