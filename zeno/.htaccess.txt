@@ -1,0 +1,92 @@
+# ============================================
+# ZENO SECURITY CONFIGURATION
+# ============================================
+
+# Enable Rewrite Engine
+RewriteEngine On
+
+# ============================================
+# SECURITY HEADERS
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header set X-Frame-Options "DENY"
+    
+    # Enable XSS protection
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Referrer policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Permissions policy
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # Cache control for sensitive pages
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+    </FilesMatch>
+</IfModule>
+
+# ============================================
+# PREVENT DIRECTORY LISTING
+# ============================================
+Options -Indexes
+
+# ============================================
+# PROTECT SENSITIVE FILES
+# ============================================
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "*.sql">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "*.log">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# ============================================
+# BLOCK ACCESS TO SENSITIVE FOLDERS
+# ============================================
+RedirectMatch 404 /backups/
+RedirectMatch 404 /logs/
+RedirectMatch 404 /vendor/
+RedirectMatch 404 /tmp/
+
+# ============================================
+# PREVENT ACCESS TO HIDDEN FILES
+# ============================================
+RedirectMatch 404 /\..*$
+
+# ============================================
+# DISABLE SERVER SIGNATURE
+# ============================================
+ServerSignature Off
+
+# ============================================
+# PREVENT SQL INJECTION ATTEMPTS (Basic)
+# ============================================
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+RewriteRule ^(.*)$ index.php [F,L]
+
+# ============================================
+# FORCE HTTPS (Uncomment when SSL is installed)
+# ============================================
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
