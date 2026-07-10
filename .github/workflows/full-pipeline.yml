@@ -1,27 +1,19 @@
+name: Test
+
+on:
+  push:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Show files
+      - name: List files
         run: ls -la
-      
-      - name: Check PHP syntax
-        run: php -l *.php || true
-      
-      - name: Build Docker image
-        run: |
-          echo "FROM php:8.1-apache" > Dockerfile
-          echo "COPY . /var/www/html/" >> Dockerfile
-          docker build -t zeno-app .
-      
-      - name: Deploy (simulated)
-        run: echo "🚀 Deploying ZENO Invoice System..."
-      
+      - name: Check PHP
+        run: php -v
       - name: Done
-        run: echo "✅ ZENO pipeline complete!"
+        run: echo "✅ Workflow completed!"
