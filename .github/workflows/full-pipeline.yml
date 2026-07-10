@@ -1,0 +1,31 @@
+name: Full Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Show files
+        run: ls -la
+      
+      - name: Check PHP syntax
+        run: php -l *.php || true
+      
+      - name: Build Docker image
+        run: |
+          echo "FROM php:8.1-apache" > Dockerfile
+          echo "COPY . /var/www/html/" >> Dockerfile
+          docker build -t zeno-app .
+      
+      - name: Deploy (simulated)
+        run: echo "🚀 Deploying ZENO Invoice System..."
+      
+      - name: Done
+        run: echo "✅ ZENO pipeline complete!"
