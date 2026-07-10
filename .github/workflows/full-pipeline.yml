@@ -1,4 +1,4 @@
-name: Test
+name: Full Pipeline
 
 on:
   push:
@@ -6,14 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
+      # 1. Get your code
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # 2. Show what's in your repo
       - name: List files
         run: ls -la
+
+      # 3. Check PHP syntax
       - name: Check PHP
-        run: php -v
+        run: php -l *.php || true
+
+      # 4. Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t zeno-app .
+
+      # 5. Show Docker images
+      - name: Show Docker images
+        run: docker images
+
+      # 6. Done
       - name: Done
-        run: echo "✅ Workflow completed!"
+        run: echo "✅ Build complete! Image: zeno-app"
