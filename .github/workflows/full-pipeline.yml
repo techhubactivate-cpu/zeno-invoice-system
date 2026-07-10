@@ -1,8 +1,4 @@
-name: Full Pipeline
-
-on:
-  push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-and-deploy:
