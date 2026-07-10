@@ -1,0 +1,20 @@
+name: Deploy to Cloud
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Display files
+        run: |
+          echo "✅ Deployment started!"
+          echo "📁 Files in repo:"
+          ls -la
+          echo "🌐 App is ready for deployment!"
